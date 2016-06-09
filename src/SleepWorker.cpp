@@ -26,3 +26,8 @@ bool SleepWorker::do_step(std::size_t step)
     std::cout << m_name << ": step " << step << " complete." << std::endl;
     return true;
 }
+
+std::__cxx11::string SleepWorker::name() const
+{
+    return m_name;
+}

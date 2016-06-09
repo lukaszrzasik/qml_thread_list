@@ -13,6 +13,8 @@ public:
     virtual bool do_init(std::size_t& steps) override;
     virtual bool do_step(std::size_t step) override;
 
+    std::string name() const;
+
 private:
     std::string m_name;
     size_t      m_numSteps;

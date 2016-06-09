@@ -32,6 +32,11 @@ std::vector<WorkerManager::WorkerType> WorkerManager::listWorkers() const
     return l;
 }
 
+size_t WorkerManager::workersSize() const
+{
+    return m_workers.size();
+}
+
 void WorkerManager::pause(size_t workerId)
 {
     if (workerId < m_workers.size())
@@ -68,7 +73,16 @@ void WorkerManager::stop(size_t workerId)
     }
 }
 
-std::string WorkerManager::status(size_t workerId)
+std::string WorkerManager::status(size_t workerId) const
 {
     return m_workers.at(workerId).m_worker->stateAsString();
+}
+
+std::string WorkerManager::name(size_t workerId) const
+{
+    SleepWorker * sw;
+    if (m_workers.at(workerId).m_type == WorkerType::Sleep) {
+        sw = dynamic_cast<SleepWorker*>(m_workers.at(workerId).m_worker.get());
+    }
+    return sw ? sw->name() : "";
 }

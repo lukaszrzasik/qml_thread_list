@@ -19,11 +19,13 @@ public:
 
     size_t startWorker(const std::string& name, size_t numSteps, size_t stepTime);
     std::vector<WorkerType> listWorkers() const;
+    size_t workersSize() const;
 
     void pause(size_t workerId);
     void restart(size_t workerId);
     void stop(size_t workerId);
-    std::string status(size_t workerId);
+    std::string status(size_t workerId) const;
+    std::string name(size_t workerId) const;
 
 private:
     struct WorkerRecord
