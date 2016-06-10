@@ -1,40 +1,44 @@
 #include "workerlistmodel.h"
 
+#include "WorkerManager.h"
 
 #include <iostream>
 
-workerlistmodel::workerlistmodel(const WorkerManager & wm, QAbstractListModel *parent)
+WorkerListModel::WorkerListModel(const WorkerManager & wm, QAbstractListModel *parent)
     : m_wm(wm)
     , QAbstractListModel(parent)
 {
 
 }
 
-int workerlistmodel::rowCount(const QModelIndex &parent) const
+int WorkerListModel::rowCount(const QModelIndex &parent) const
 {
     return m_wm.workersSize();
 }
 
-QVariant workerlistmodel::data(const QModelIndex &index, int role) const
+QVariant WorkerListModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid()) {
-        std::cout << "Index is invalid" << std::endl;
+        std::cerr << "Index is invalid" << std::endl;
         return QVariant();
     }
 
     if (index.row() >= m_wm.workersSize()) {
-        std::cout << "index is too big" << std::endl;
+        std::cerr << "index is too big" << std::endl;
         return QVariant();
     }
 
     if (role == WorkerListRoles::NameRole)
-        return QString::fromStdString(m_wm.name(index.row()));
-
-    if (role == WorkerListRoles::StatusRole)
-        return QString::fromStdString(m_wm.status(index.row()));
+        return m_wm.name(index.row());
+    else if (role == WorkerListRoles::StatusRole)
+        return m_wm.status(index.row());
+    else if (role == WorkerListRoles::NoStepsRole)
+        return m_wm.noSteps(index.row());
+    else if (role == WorkerListRoles::StepRole)
+        return m_wm.step(index.row());
 }
 
-QVariant workerlistmodel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant WorkerListModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     switch (section) {
     case 1:
@@ -46,10 +50,22 @@ QVariant workerlistmodel::headerData(int section, Qt::Orientation orientation, i
     }
 }
 
-QHash<int, QByteArray> workerlistmodel::roleNames() const {
+QHash<int, QByteArray> WorkerListModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[NameRole] = "name";
     roles[StatusRole] = "status";
+    roles[NoStepsRole] = "noSteps";
+    roles[StepRole] = "step";
     return roles;
+}
+
+void WorkerListModel::beginInsertRow(int index)
+{
+    beginInsertRows(QModelIndex(), index, index);
+}
+
+void WorkerListModel::endInsertRow()
+{
+    endInsertRows();
 }
 

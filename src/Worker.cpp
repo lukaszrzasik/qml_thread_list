@@ -1,6 +1,34 @@
 #include "Worker.h"
+#include "observer.h"
 
 #include <iostream>
+
+void Worker::registerObserver(Observer * observer)
+{
+    if (observer != nullptr)
+    {
+        std::lock_guard<std::mutex> lock(m_observersMutex);
+        m_observers.insert(observer);
+    }
+}
+
+void Worker::unregisterObserver(Observer * observer)
+{
+    if (observer != nullptr)
+    {
+        std::lock_guard<std::mutex> lock(m_observersMutex);
+        m_observers.erase(observer);
+    }
+}
+
+void Worker::notifyAll() const
+{
+    std::lock_guard<std::mutex> lock(m_observersMutex);
+    for (Observer * observer : m_observers)
+    {
+        observer->notify(this);
+    }
+}
 
 Worker::Worker()
       : m_state(Empty)
@@ -112,7 +140,7 @@ void Worker::tryPause()
     while (m_request == Pause)
     {
         std::cout << "Pausing!\n";
-        m_state = Paused;
+        setState(Paused);
         m_condition.wait(lock);
     }
 }
@@ -169,6 +197,7 @@ void Worker::run()
                 return;
             }
 
+            setStep(step);
             run_step(step);
         }
     }
@@ -233,17 +262,29 @@ std::size_t Worker::step() const
 void Worker::setStep(std::size_t step)
 {
     const std::lock_guard<std::mutex> lock(m_mutex);
-    m_step = step;
+    if (m_step != step)
+    {
+        m_step = step;
+        notifyAll();
+    }
 }
 
 void Worker::setSteps(std::size_t steps)
 {
     const std::lock_guard<std::mutex> lock(m_mutex);
-    m_steps = steps;
+    if (m_steps != steps)
+    {
+        m_steps = steps;
+        notifyAll();
+    }
 }
 
 void Worker::setState(State state)
 {
     const std::lock_guard<std::mutex> lock(m_mutex);
-    m_state = state;
+    if (m_state != state)
+    {
+        m_state = state;
+        notifyAll();
+    }
 }

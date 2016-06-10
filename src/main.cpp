@@ -1,23 +1,14 @@
-#include "workermanagerwrapper.h"
-#include "workerlistmodel.h"
+#include "WorkerManager.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-
-
-
 int main(int argc, char *argv[])
 {
         QGuiApplication app(argc, argv);
 
-        WorkerManagerWrapper wm;
-        wm.startWorker("first", 1, 10000);
-        wm.startWorker("second", 2, 10000);
-        wm.startWorker("third", 3, 10000);
-        wm.startWorker("fourth", 4, 10000);
-        wm.startWorker("fifth", 5, 10000);
+        WorkerManager wm;
 
         QQmlApplicationEngine engine;
         QQmlContext * context = engine.rootContext();

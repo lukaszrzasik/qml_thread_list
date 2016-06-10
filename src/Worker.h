@@ -1,14 +1,26 @@
 #pragma once
 
+#include "observable.h"
+
 #include <memory>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
 #include <vector>
 #include <string>
+#include <unordered_set>
 
-class Worker
+class Observer;
+
+class Worker : public Observable
 {
+public:
+    /// Inherited from Observable
+
+    virtual void registerObserver(Observer * observer);
+    virtual void unregisterObserver(Observer * observer);
+    virtual void notifyAll() const;
+
 public:
     /// \brief Represents the current state in which a worker is.
     enum State
@@ -121,4 +133,7 @@ private:
 
     std::size_t                  m_steps;     ///< Number of processing steps
     std::size_t                  m_step;      ///< Current processing step
+
+    std::unordered_set<Observer *> m_observers;
+    mutable std::mutex              m_observersMutex;
 };

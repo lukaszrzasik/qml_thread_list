@@ -2,8 +2,9 @@ set(SRC_LIST main.cpp
              SleepWorker.cpp
              Worker.cpp
              WorkerManager.cpp
-             workermanagerwrapper.cpp
-             workerlistmodel.cpp)
+             workerlistmodel.cpp
+             observable.h
+             observer.h)
 
 find_package(Qt5 COMPONENTS Quick Core Qml)
 qt5_add_resources(RESOURCES resources/images.qrc resources/qml.qrc)
